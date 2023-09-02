@@ -1,0 +1,51 @@
+name: Run Tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.36.0
+      - run: |
+          make test
+
+  test-node:
+    strategy:
+      matrix:
+        version: ['17.5.0', 18, 19, 20]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.36.0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version }}
+      - run: |
+          make build-npm
+          deno run --allow-net mock_server.ts &
+          node node_test.js
+
+  test-cli:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.36.0
+      - env:
+          LOCKDB_SERVICE_ID: 'service-identifier'
+          LOCKDB_API_KEY: 'api-key'
+          LOCKDB_SERVER_URL: 'http://127.0.0.1:5678'
+        run: |
+          deno install --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts --name lockdb
+          deno run --allow-net mock_server.ts &
+          ./bash_test.sh 
