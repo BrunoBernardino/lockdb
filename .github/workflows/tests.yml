@@ -16,7 +16,7 @@ jobs:
   test-node:
     strategy:
       matrix:
-        version: ['17.5.0', 18, 19, 20]
+        version: [18, 19, 20]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -29,7 +29,7 @@ jobs:
       - run: |
           make build-npm
           deno run --allow-net mock_server.ts &
-          node node_test.js
+          sleep 5 && node node_test.js
 
   test-cli:
     strategy:
@@ -48,4 +48,4 @@ jobs:
         run: |
           deno install --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts --name lockdb
           deno run --allow-net mock_server.ts &
-          ./bash_test.sh 
+          sleep 5 && ./bash_test.sh 

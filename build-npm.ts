@@ -35,7 +35,7 @@ await build({
       url: 'https://github.com/BrunoBernardino/lockdb/issues',
     },
     engines: {
-      node: '>=17.5.0',
+      node: '>=18.0.0',
     },
   },
   postBuild() {
