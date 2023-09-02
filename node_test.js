@@ -10,7 +10,7 @@ const lock = new LockDB('service-identifier', {
 
 (async () => {
   // Create a lock
-  let wasReportLocked = await lock.lock('report', { waitTimeoutInMs: 50 }); // Node needs a few more MS to not timeout
+  let wasReportLocked = await lock.lock('report');
   if (wasReportLocked !== false) {
     console.error('Lock failed');
     process.exit(1);
