@@ -25,6 +25,7 @@ await build({
       'locking',
       'semaphore',
       'synchronization',
+      'synchronisation',
       'sync',
     ],
     repository: {
