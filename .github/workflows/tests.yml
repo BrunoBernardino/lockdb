@@ -46,6 +46,6 @@ jobs:
           LOCKDB_API_KEY: 'api-key'
           LOCKDB_SERVER_URL: 'http://127.0.0.1:5678'
         run: |
-          deno install --config=deno.json --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts --name lockdb
+          deno install --config=deno.json --import-map=import_map.json --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts --name lockdb
           deno run --allow-net mock_server.ts &
           sleep 5 && ./bash_test.sh 
