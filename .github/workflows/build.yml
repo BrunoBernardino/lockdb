@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,8 +23,6 @@ jobs:
           deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=aarch64-apple-darwin main.ts --output lockdb-apple-silicon
       - name: Upload linux-intel binary to release
         uses: svenstaro/upload-release-action@v2
-        permissions:
-          contents: write
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: lockdb-linux-intel
@@ -30,8 +30,6 @@ jobs:
           tag: ${{ github.ref }}
       - name: Upload windows-intel binary to release
         uses: svenstaro/upload-release-action@v2
-        permissions:
-          contents: write
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: lockdb-windows-intel
@@ -39,8 +37,6 @@ jobs:
           tag: ${{ github.ref }}
       - name: Upload apple-intel binary to release
         uses: svenstaro/upload-release-action@v2
-        permissions:
-          contents: write
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: lockdb-apple-intel
@@ -48,8 +44,6 @@ jobs:
           tag: ${{ github.ref }}
       - name: Upload apple-silicon binary to release
         uses: svenstaro/upload-release-action@v2
-        permissions:
-          contents: write
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: lockdb-apple-silicon
