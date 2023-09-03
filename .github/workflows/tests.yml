@@ -34,8 +34,8 @@ jobs:
   test-cli:
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-gnu, x86_64-pc-windows-msvc, x86_64-apple-darwin, aarch64-apple-darwin]
-    runs-on: ubuntu-latest
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
@@ -46,7 +46,7 @@ jobs:
           LOCKDB_API_KEY: 'api-key'
           LOCKDB_SERVER_URL: 'http://127.0.0.1:5678'
         run: |
-          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=${{ matrix.target }} main.ts --output lockdb
+          deno install --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts --name lockdb
           chmod +x lockdb
           deno run --allow-net mock_server.ts &
           sleep 5 && ./bash_test.sh 
