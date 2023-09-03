@@ -15,6 +15,8 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.36.0
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Compile
         run: |
           deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-unknown-linux-gnu main.ts --output lockdb-linux-intel
@@ -28,7 +30,7 @@ jobs:
           file: lockdb-linux-intel
           asset_name: lockdb-linux-intel
           tag: ${{ github.ref }}
-          release_name: "v${{ github.ref }}"
+          release_name: "v${{ env.RELEASE_VERSION }}"
           prerelease: true
       - name: Upload windows-intel binary to release
         uses: svenstaro/upload-release-action@v2
@@ -37,7 +39,7 @@ jobs:
           file: lockdb-windows-intel.exe
           asset_name: lockdb-windows-intel.exe
           tag: ${{ github.ref }}
-          release_name: "v${{ github.ref }}"
+          release_name: "v${{ env.RELEASE_VERSION }}"
           prerelease: true
       - name: Upload apple-intel binary to release
         uses: svenstaro/upload-release-action@v2
@@ -46,7 +48,7 @@ jobs:
           file: lockdb-apple-intel
           asset_name: lockdb-apple-intel
           tag: ${{ github.ref }}
-          release_name: "v${{ github.ref }}"
+          release_name: "v${{ env.RELEASE_VERSION }}"
           prerelease: true
       - name: Upload apple-silicon binary to release
         uses: svenstaro/upload-release-action@v2
@@ -55,5 +57,5 @@ jobs:
           file: lockdb-apple-silicon
           asset_name: lockdb-apple-silicon
           tag: ${{ github.ref }}
-          release_name: "v${{ github.ref }}"
+          release_name: "v${{ env.RELEASE_VERSION }}"
           prerelease: true
