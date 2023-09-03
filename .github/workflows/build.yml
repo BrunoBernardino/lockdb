@@ -32,8 +32,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: lockdb-windows-intel
-          asset_name: lockdb-windows-intel
+          file: lockdb-windows-intel.exe
+          asset_name: lockdb-windows-intel.exe
           tag: ${{ github.ref }}
       - name: Upload apple-intel binary to release
         uses: svenstaro/upload-release-action@v2
