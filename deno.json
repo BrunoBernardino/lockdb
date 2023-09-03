@@ -13,5 +13,6 @@
   "test": {
     "exclude": ["./npm", "./node_test.js"]
   },
+  "importMap": "./import_map.json",
   "lock": false
 }

@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.36.0
+      - name: Compile
+        run: |
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-unknown-linux-gnu main.ts --output lockdb-linux-intel
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-pc-windows-msvc main.ts --output lockdb-windows-intel
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-apple-darwin main.ts --output lockdb-apple-intel
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=aarch64-apple-darwin main.ts --output lockdb-apple-silicon
+      - name: Upload linux-intel binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: lockdb-linux-intel
+          asset_name: lockdb-linux-intel
+          tag: ${{ github.ref }}
+      - name: Upload windows-intel binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: lockdb-windows-intel
+          asset_name: lockdb-windows-intel
+          tag: ${{ github.ref }}
+      - name: Upload apple-intel binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: lockdb-apple-intel
+          asset_name: lockdb-apple-intel
+          tag: ${{ github.ref }}
+      - name: Upload apple-silicon binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: lockdb-apple-silicon
+          asset_name: lockdb-apple-silicon
+          tag: ${{ github.ref }}

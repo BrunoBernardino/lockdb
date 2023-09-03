@@ -6,7 +6,7 @@ format:
 test:
 	deno fmt --check
 	deno lint
-	deno test --allow-net --check=all
+	deno test --allow-net --allow-env --check=all
 
 .PHONY: publish
 publish:

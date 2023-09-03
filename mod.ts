@@ -4,7 +4,7 @@ export interface ConstructorOptions {
 }
 
 interface LockActionOptions {
-  /** a URL which will receive a POST event (with `{ "lockName": "<lock name>" }` in the body) when the lock becomes unlocked */
+  /** a URL which will receive a POST event (with `{ "lockName": "<lock name>" }` in the body) when the lock expires or is unlocked */
   unlockWebhookUrl?: string;
   waitTimeoutInMs?: number;
   /** a number of milliseconds after which the lock will automatically expire */
