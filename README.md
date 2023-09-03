@@ -64,7 +64,7 @@ Here's an example for Linux intel (x86_64), on downloading it with `curl` and mo
 
 ```sh
 # Download the binary from the latest release for your system and move it to `/usr/local/bin/`. Here's an example for most Linux OSes:
-$ curl https://github.com/BrunoBernardino/lockdb/releases/latest/download/lockdb-linux-intel --output lockdb && sudo mv lockdb /usr/local/bin/
+$ curl -L https://github.com/BrunoBernardino/lockdb/releases/latest/download/lockdb-linux-intel --output lockdb && chmod +x lockdb && sudo mv lockdb /usr/local/bin/
 ```
 
 Then to use it, on any OS:

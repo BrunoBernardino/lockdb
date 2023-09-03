@@ -28,6 +28,8 @@ jobs:
           file: lockdb-linux-intel
           asset_name: lockdb-linux-intel
           tag: ${{ github.ref }}
+          release_name: "v${{ github.ref }}"
+          prerelease: true
       - name: Upload windows-intel binary to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -35,6 +37,8 @@ jobs:
           file: lockdb-windows-intel.exe
           asset_name: lockdb-windows-intel.exe
           tag: ${{ github.ref }}
+          release_name: "v${{ github.ref }}"
+          prerelease: true
       - name: Upload apple-intel binary to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -42,6 +46,8 @@ jobs:
           file: lockdb-apple-intel
           asset_name: lockdb-apple-intel
           tag: ${{ github.ref }}
+          release_name: "v${{ github.ref }}"
+          prerelease: true
       - name: Upload apple-silicon binary to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -49,3 +55,5 @@ jobs:
           file: lockdb-apple-silicon
           asset_name: lockdb-apple-silicon
           tag: ${{ github.ref }}
+          release_name: "v${{ github.ref }}"
+          prerelease: true
