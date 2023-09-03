@@ -47,6 +47,5 @@ jobs:
           LOCKDB_SERVER_URL: 'http://127.0.0.1:5678'
         run: |
           deno install --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts --name lockdb
-          chmod +x lockdb
           deno run --allow-net mock_server.ts &
           sleep 5 && ./bash_test.sh 
