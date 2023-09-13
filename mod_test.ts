@@ -4,44 +4,64 @@ import LockDB from './mod.ts';
 import { abortController, port } from './mock_server.ts';
 
 export const VALID_TEST_AUTH = {
-  serviceId: 'service-identifier',
+  serviceId: 'reports',
   apiKey: 'api-key',
 };
 
 Deno.test({
   name: 'LockDB basic usage',
   fn: async () => {
-    const lock = new LockDB(VALID_TEST_AUTH.serviceId, {
+    const lockName = 'sales';
+    const secondLockName = 'backup';
+
+    const locker = new LockDB(VALID_TEST_AUTH.serviceId, {
       apiKey: VALID_TEST_AUTH.apiKey,
       serverUrl: `http://127.0.0.1:${port}`,
     });
 
     // Create a lock
-    let wasReportLocked = await lock.lock('report', { waitTimeoutInMs: 5 });
-    assertEquals(wasReportLocked, false);
+    try {
+      await locker.lock(lockName, { waitTimeoutInMs: 10 });
+    } catch (error) {
+      console.error(`Failed to obtain lock (${lockName}): ${error}`);
+      assertEquals(true, false);
+    }
 
     // Create another lock
-    const wasBackupLocked = await lock.lock('backup');
-    assertEquals(wasBackupLocked, false);
+    try {
+      await locker.lock(secondLockName, { waitTimeoutInMs: 10 });
+    } catch (error) {
+      console.error(`Failed to obtain lock (${secondLockName}): ${error}`);
+      assertEquals(true, false);
+    }
 
     // Check lock
-    let isReportLocked = await lock.check('report');
+    let isReportLocked = await locker.check(lockName);
     assertEquals(isReportLocked, true);
 
     // Try creating the same lock again
-    isReportLocked = await lock.lock('report');
-    assertEquals(isReportLocked, true);
+    try {
+      await locker.lock(lockName, { waitTimeoutInMs: 10 });
+      console.error('Lock unexpectedly obtained');
+      assertEquals(true, false);
+    } catch (error) {
+      if (!error.toString().includes('TimeoutError')) {
+        console.error('Lock unexpectedly failed');
+        console.error(error);
+        assertEquals(true, false);
+      }
+    }
 
     // Unlock
-    wasReportLocked = await lock.unlock('report');
+    const wasReportLocked = await locker.unlock(lockName);
     assertEquals(wasReportLocked, true);
 
     // Check lock
-    isReportLocked = await lock.check('report');
+    isReportLocked = await locker.check(lockName);
     assertEquals(isReportLocked, false);
 
     // Create the other lock
-    const isBackupLocked = await lock.check('backup');
+    const isBackupLocked = await locker.check(secondLockName);
     assertEquals(isBackupLocked, true);
 
     abortController.abort('Test finished');

@@ -10,7 +10,7 @@ Deno.test('parseArguments should correctly parse CLI arguments', () => {
       expected: {
         apiKey: undefined,
         help: true,
-        lockExpirationInMs: undefined,
+        lockExpirationInSeconds: undefined,
         params: [],
         serverUrl: undefined,
         serviceId: undefined,
@@ -27,7 +27,7 @@ Deno.test('parseArguments should correctly parse CLI arguments', () => {
       expected: {
         apiKey: 'key',
         help: false,
-        lockExpirationInMs: undefined,
+        lockExpirationInSeconds: undefined,
         params: [],
         serverUrl: 'url',
         serviceId: 'service',
@@ -44,12 +44,12 @@ Deno.test('parseArguments should correctly parse CLI arguments', () => {
       expected: {
         apiKey: undefined,
         help: false,
-        lockExpirationInMs: 'lock',
+        lockExpirationInSeconds: undefined,
         params: [],
         serverUrl: undefined,
         serviceId: undefined,
         unlockWebhookUrl: 'unlock',
-        waitTimeoutInMs: 'wait',
+        waitTimeoutInMs: undefined,
       },
     },
   ];

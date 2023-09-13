@@ -28,6 +28,7 @@ await build({
       'synchronisation',
       'sync',
     ],
+    homepage: 'https://lockdb.com',
     repository: {
       type: 'git',
       url: 'git+https://github.com/BrunoBernardino/lockdb.git',

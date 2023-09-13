@@ -42,7 +42,7 @@ jobs:
         with:
           deno-version: v1.36.0
       - env:
-          LOCKDB_SERVICE_ID: 'service-identifier'
+          LOCKDB_SERVICE_ID: 'reports'
           LOCKDB_API_KEY: 'api-key'
           LOCKDB_SERVER_URL: 'http://127.0.0.1:5678'
         run: |

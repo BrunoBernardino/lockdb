@@ -12,47 +12,37 @@ You can get your `apiKey` at [lockdb.com](https://lockdb.com) or connect `LockDB
 
 ## Usage (package)
 
-### Node/Browser/Bun/NPM
+### Node / Browser / Bun / Npm
+
+You don't need to install anything with Deno, but here's how you do it with all others:
 
 ```bash
 npm install --save-exact lockdb
+yarn add --exact lockdb
+pnpm add --save-exact lockdb
 ```
 
 ```js
-const LockDB = require('lockdb'); // or import LockDB from 'lockdb';
+// import LockDB from 'lockdb';
+// import LockDB from 'https://deno.land/x/lockdb@0.1.0/mod.ts';
+const LockDB = require('lockdb');
 
-const lock = new LockDB('service-id', { apiKey: 'api-key' });
-
-// Check on a lock (optional)
-const isReportLocked = await lock.check('report');
-console.log(isReportLocked); // Outputs `false`
-
-// Create a lock, returning if it was locked before
-const wasReportLocked = await lock.lock('report');
-console.log(isReportLocked); // Outputs `false`
-
-// Unlock a lock, returning if it was locked before
-const wasReportLockedBeforeUnlock = await lock.unlock('report');
-console.log(wasReportLockedBeforeUnlock); // Outputs `true`
-```
-
-### Deno
-
-```ts
-import LockDB from 'https://deno.land/x/lockdb@1.0.0/mod.ts';
-
-const lock = new LockDB('service-id', { apiKey: 'api-key' });
+const lockName = 'sales';
+const locker = new LockDB('reports', { apiKey: 'api-key' });
 
 // Check on a lock (optional)
-const isReportLocked = await lock.check('report');
+const isReportLocked = await locker.check(lockName);
 console.log(isReportLocked); // Outputs `false`
 
-// Create a lock, returning if it was locked before
-const wasReportLocked = await lock.lock('report');
-console.log(isReportLocked); // Outputs `false`
+// Create a lock, waiting up to 30 seconds for it
+try {
+  await locker.lock(lockName);
+} catch (error) {
+  console.error(`Failed to obtain lock (${lockName}): ${error}`);
+}
 
 // Unlock a lock, returning if it was locked before
-const wasReportLockedBeforeUnlock = await lock.unlock('report');
+const wasReportLockedBeforeUnlock = await locker.unlock(lockName);
 console.log(wasReportLockedBeforeUnlock); // Outputs `true`
 ```
 
@@ -71,20 +61,20 @@ Then to use it, on any OS:
 
 ```sh
 # Set ENV variables
-$ export LOCKDB_SERVICE_ID="service-id"
-$ export LOCKDB_API_KEY="api-key"
+export LOCKDB_SERVICE_ID="reports"
+export LOCKDB_API_KEY="api-key"
 
 # Check on a lock
-$ lockdb check report
-false
+lockdb check sales
+# Outputs `false`
 
-# Create a lock, returning if it was locked before
-$ lockdb lock report
-false
+# Create a lock, waiting up to 30 seconds for it
+lockdb lock sales
+# Outputs `true`
 
 # Unlock a lock, returning if it was locked before 
-$ lockdb unlock report
-true
+lockdb unlock sales
+# Outputs `true`
 ```
 
 ## Development
@@ -97,7 +87,7 @@ $ make test
 
 # CLI
 $ deno run --allow-net mock_server.ts
-$ deno run --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts check report --server-url="http://127.0.0.1:5678" --service-id="service-identifier" --api-key="api-key"
+$ deno run --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts check sales --server-url="http://127.0.0.1:5678" --service-id="reports" --api-key="api-key"
 ```
 
 ## Publishing

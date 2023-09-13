@@ -4,11 +4,11 @@ export interface ConstructorOptions {
 }
 
 interface LockActionOptions {
-  /** a URL which will receive a POST event (with `{ "lockName": "<lock name>" }` in the body) when the lock expires or is unlocked */
+  /** a URL which will receive a POST event (with `{ "serviceId": "<service id>", "lockName": "<lock name>" }` in the body) when the lock expires or is unlocked */
   unlockWebhookUrl?: string;
   waitTimeoutInMs?: number;
-  /** a number of milliseconds after which the lock will automatically expire */
-  lockExpirationInMs?: number;
+  /** a number of seconds after which the lock will automatically expire */
+  lockExpirationInSeconds?: number;
 }
 interface UnlockActionOptions {
   waitTimeoutInMs?: number;
@@ -20,7 +20,8 @@ interface CheckActionOptions {
 type ClientLockEventData = {
   eventName: 'lock';
   lockName: string;
-} & Pick<LockActionOptions, 'unlockWebhookUrl' | 'lockExpirationInMs'>;
+  waitForLockInMs: number;
+} & Pick<LockActionOptions, 'unlockWebhookUrl' | 'lockExpirationInSeconds'>;
 type ClientUnlockEventData = {
   eventName: 'unlock';
   lockName: string;
@@ -33,7 +34,6 @@ type ClientCheckEventData = {
 interface ServerLockEventData {
   eventName: 'lock';
   lockName: string;
-  wasLocked: boolean;
 }
 interface ServerUnlockEventData {
   eventName: 'unlock';
@@ -68,7 +68,7 @@ export default class LockDB {
 
   protected async callServer<T = ServerSentEventData>(
     data: ClientSentEventData,
-    { callTimeoutInMs = 5000 }: CallServerOptions = {},
+    { callTimeoutInMs = 5_000 }: CallServerOptions = {},
   ): Promise<T> {
     const headers = {
       'Authorization': `Bearer ${this.apiKey}`,
@@ -97,13 +97,19 @@ export default class LockDB {
 
   public async lock(
     name: string,
-    { unlockWebhookUrl, waitTimeoutInMs = 5_000, lockExpirationInMs = 300_000 }: LockActionOptions = {},
+    { unlockWebhookUrl, waitTimeoutInMs = 30_000, lockExpirationInSeconds = 300 }: LockActionOptions = {},
   ): Promise<boolean> {
-    const data: ClientLockEventData = { eventName: 'lock', lockName: name, unlockWebhookUrl, lockExpirationInMs };
+    const data: ClientLockEventData = {
+      eventName: 'lock',
+      lockName: name,
+      waitForLockInMs: waitTimeoutInMs,
+      unlockWebhookUrl,
+      lockExpirationInSeconds,
+    };
 
-    const result = await this.callServer<ServerLockEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+    await this.callServer<ServerLockEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
 
-    return Boolean(result.wasLocked);
+    return true;
   }
 
   public async unlock(

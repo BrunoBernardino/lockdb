@@ -13,8 +13,8 @@ export function parseArguments(
   apiKey?: string;
   serverUrl?: string;
   unlockWebhookUrl?: string;
-  waitTimeoutInMs?: string;
-  lockExpirationInMs?: string;
+  waitTimeoutInMs?: number;
+  lockExpirationInSeconds?: number;
   params: (string | number)[];
 } {
   const parsedArgs = parse(args, {
@@ -25,7 +25,7 @@ export function parseArguments(
       'server-url',
       'unlock-webhook-url',
       'wait-timeout-in-ms',
-      'lock-expiration-in-ms',
+      'lock-expiration-in-s',
     ],
     alias: {
       'help': 'h',
@@ -34,7 +34,7 @@ export function parseArguments(
       'server-url': 's',
       'unlock-webhook-url': 'u',
       'wait-timeout-in-ms': 'w',
-      'lock-expiration-in-ms': 'l',
+      'lock-expiration-in-s': 'l',
     },
   });
   const params = parsedArgs._;
@@ -44,10 +44,26 @@ export function parseArguments(
   const apiKey = parsedArgs['api-key'] || LOCKDB_API_KEY;
   const serverUrl = parsedArgs['server-url'] || LOCKDB_SERVER_URL;
   const unlockWebhookUrl = parsedArgs['unlock-webhook-url'];
-  const waitTimeoutInMs = parsedArgs['wait-timeout-in-ms'];
-  const lockExpirationInMs = parsedArgs['lock-expiration-in-ms'];
+  let waitTimeoutInMs: string | undefined | number = parsedArgs['wait-timeout-in-ms'];
+  let lockExpirationInSeconds: string | undefined | number = parsedArgs['lock-expiration-in-s'];
 
-  return { help, serviceId, apiKey, serverUrl, unlockWebhookUrl, waitTimeoutInMs, lockExpirationInMs, params };
+  if (typeof waitTimeoutInMs !== 'undefined') {
+    waitTimeoutInMs = parseInt(waitTimeoutInMs, 10);
+
+    if (Number.isNaN(waitTimeoutInMs)) {
+      waitTimeoutInMs = undefined;
+    }
+  }
+
+  if (typeof lockExpirationInSeconds !== 'undefined') {
+    lockExpirationInSeconds = parseInt(lockExpirationInSeconds, 10);
+
+    if (Number.isNaN(lockExpirationInSeconds)) {
+      lockExpirationInSeconds = undefined;
+    }
+  }
+
+  return { help, serviceId, apiKey, serverUrl, unlockWebhookUrl, waitTimeoutInMs, lockExpirationInSeconds, params };
 }
 
 function printHelp(): void {
@@ -68,18 +84,18 @@ function printHelp(): void {
     '  -s, --server-url                Server URL (optional, alternatively set by ENV var `LOCKDB_SERVER_URL`)',
   );
   console.log(
-    '  -w, --wait-timeout-in-ms        How long to wait for the command to finish, in milliseconds (optional)',
+    '  -w, --wait-timeout-in-ms        How long to wait for the command to finish (including waiting for a lock), in milliseconds (optional, defaults to 30 seconds for `lock` and to 5 seconds for the other commands)',
   );
   console.log(
     '  -u, --unlock-webhook-url        A URL which will receive a POST event (with `{ "lockName": "<lock name>" }` in the body) when the lock expires or is unlocked (optional, for `lock`)',
   );
   console.log(
-    '  -l, --lock-expiration-in-ms     A number of milliseconds after which the lock will automatically expire (optional, for `lock`)',
+    '  -l, --lock-expiration-in-s     A number of seconds after which the lock will automatically expire (optional, for `lock`, defaults to 300 seconds - 5 minutes)',
   );
 }
 
 async function main(args: string[]): Promise<void> {
-  const { help, serviceId, apiKey, serverUrl, unlockWebhookUrl, waitTimeoutInMs, lockExpirationInMs, params } =
+  const { help, serviceId, apiKey, serverUrl, unlockWebhookUrl, waitTimeoutInMs, lockExpirationInSeconds, params } =
     parseArguments(args);
 
   // If help flag enabled, print help.
@@ -117,23 +133,23 @@ async function main(args: string[]): Promise<void> {
     Deno.exit(1);
   }
 
-  const lock = new LockDB(serviceId, { apiKey, serverUrl });
+  const locker = new LockDB(serviceId, { apiKey, serverUrl });
 
   if (command === 'lock') {
-    const wasLocked = await lock.lock(lockName, {
+    const gotTheLock = await locker.lock(lockName, {
       unlockWebhookUrl,
-      waitTimeoutInMs: waitTimeoutInMs ? parseInt(waitTimeoutInMs, 10) : undefined,
-      lockExpirationInMs: lockExpirationInMs ? parseInt(lockExpirationInMs, 10) : undefined,
+      waitTimeoutInMs,
+      lockExpirationInSeconds,
     });
-    console.log(wasLocked);
+    console.log(gotTheLock);
   } else if (command === 'unlock') {
-    const wasLocked = await lock.unlock(lockName, {
-      waitTimeoutInMs: waitTimeoutInMs ? parseInt(waitTimeoutInMs, 10) : undefined,
+    const wasLocked = await locker.unlock(lockName, {
+      waitTimeoutInMs,
     });
     console.log(wasLocked);
   } else if (command === 'check') {
-    const isLocked = await lock.check(lockName, {
-      waitTimeoutInMs: waitTimeoutInMs ? parseInt(waitTimeoutInMs, 10) : undefined,
+    const isLocked = await locker.check(lockName, {
+      waitTimeoutInMs,
     });
     console.log(isLocked);
   }
