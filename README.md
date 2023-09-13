@@ -34,7 +34,7 @@ const locker = new LockDB('reports', { apiKey: 'api-key' });
 const isReportLocked = await locker.check(lockName);
 console.log(isReportLocked); // Outputs `false`
 
-// Create a lock, waiting up to 30 seconds for it
+// Obtain a lock, waiting up to 30 seconds for it
 try {
   await locker.lock(lockName);
 } catch (error) {
@@ -68,7 +68,7 @@ export LOCKDB_API_KEY="api-key"
 lockdb check sales
 # Outputs `false`
 
-# Create a lock, waiting up to 30 seconds for it
+# Obtain a lock, waiting up to 30 seconds for it
 lockdb lock sales
 # Outputs `true`
 

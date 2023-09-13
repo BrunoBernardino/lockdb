@@ -11,14 +11,14 @@ const locker = new LockDB('reports', {
 });
 
 (async () => {
-  // Create a lock
+  // Obtain a lock
   try {
     await locker.lock(lockName);
   } catch (error) {
     console.error(`Failed to obtain lock (${lockName}): ${error}`);
   }
 
-  // Create another lock
+  // Obtain another lock
   try {
     await locker.lock(secondLockName);
   } catch (error) {
@@ -32,7 +32,7 @@ const locker = new LockDB('reports', {
     process.exit(1);
   }
 
-  // Try creating the same lock again
+  // Try obtaining the same lock again (shorter timeout, to force failing)
   try {
     await locker.lock(lockName, { waitTimeoutInMs: 10 });
     console.error('Lock unexpectedly obtained');
@@ -59,7 +59,7 @@ const locker = new LockDB('reports', {
     process.exit(1);
   }
 
-  // Create the other lock
+  // Check the other lock
   const isBackupLocked = await locker.check(secondLockName);
   if (isBackupLocked !== true) {
     console.error('Lock failed');

@@ -69,7 +69,7 @@ export function parseArguments(
 function printHelp(): void {
   console.log(`Usage: lockdb [COMMAND] [OPTIONS...]`);
   console.log('\nCommands:');
-  console.log('  lock   [LOCK_NAME]              Create a lock');
+  console.log('  lock   [LOCK_NAME]              Obtain a lock');
   console.log('  unlock [LOCK_NAME]              Delete a lock');
   console.log('  check  [LOCK_NAME]              Check a lock');
   console.log('\nOptional flags:');
@@ -90,7 +90,7 @@ function printHelp(): void {
     '  -u, --unlock-webhook-url        A URL which will receive a POST event (with `{ "lockName": "<lock name>" }` in the body) when the lock expires or is unlocked (optional, for `lock`)',
   );
   console.log(
-    '  -l, --lock-expiration-in-s     A number of seconds after which the lock will automatically expire (optional, for `lock`, defaults to 300 seconds - 5 minutes)',
+    '  -l, --lock-expiration-in-s      A number of seconds after which the lock will automatically expire (optional, for `lock`, defaults to 300 seconds - 5 minutes)',
   );
 }
 

@@ -19,7 +19,7 @@ Deno.test({
       serverUrl: `http://127.0.0.1:${port}`,
     });
 
-    // Create a lock
+    // Obtain a lock
     try {
       await locker.lock(lockName, { waitTimeoutInMs: 10 });
     } catch (error) {
@@ -27,7 +27,7 @@ Deno.test({
       assertEquals(true, false);
     }
 
-    // Create another lock
+    // Obtain another lock
     try {
       await locker.lock(secondLockName, { waitTimeoutInMs: 10 });
     } catch (error) {
@@ -39,7 +39,7 @@ Deno.test({
     let isReportLocked = await locker.check(lockName);
     assertEquals(isReportLocked, true);
 
-    // Try creating the same lock again
+    // Try obtaining the same lock again (shorter timeout, to force failing)
     try {
       await locker.lock(lockName, { waitTimeoutInMs: 10 });
       console.error('Lock unexpectedly obtained');
@@ -60,7 +60,7 @@ Deno.test({
     isReportLocked = await locker.check(lockName);
     assertEquals(isReportLocked, false);
 
-    // Create the other lock
+    // Check the other lock
     const isBackupLocked = await locker.check(secondLockName);
     assertEquals(isBackupLocked, true);
 
