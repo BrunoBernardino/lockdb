@@ -1,6 +1,7 @@
 import { parse } from 'std/flags/mod.ts';
 import LockDB from './mod.ts';
 
+const VERSION = '0.1.1';
 const LOCKDB_SERVICE_ID = Deno.env.get('LOCKDB_SERVICE_ID');
 const LOCKDB_API_KEY = Deno.env.get('LOCKDB_API_KEY');
 const LOCKDB_SERVER_URL = Deno.env.get('LOCKDB_SERVER_URL');
@@ -9,6 +10,7 @@ export function parseArguments(
   args: string[],
 ): {
   help: boolean;
+  version: boolean;
   serviceId?: string;
   apiKey?: string;
   serverUrl?: string;
@@ -18,7 +20,7 @@ export function parseArguments(
   params: (string | number)[];
 } {
   const parsedArgs = parse(args, {
-    boolean: ['help'],
+    boolean: ['help', 'version'],
     string: [
       'service-id',
       'api-key',
@@ -29,6 +31,7 @@ export function parseArguments(
     ],
     alias: {
       'help': 'h',
+      'version': 'v',
       'service-id': 'i',
       'api-key': 'a',
       'server-url': 's',
@@ -39,7 +42,7 @@ export function parseArguments(
   });
   const params = parsedArgs._;
 
-  const help = parsedArgs.help;
+  const { help, version } = parsedArgs;
   const serviceId = parsedArgs['service-id'] || LOCKDB_SERVICE_ID;
   const apiKey = parsedArgs['api-key'] || LOCKDB_API_KEY;
   const serverUrl = parsedArgs['server-url'] || LOCKDB_SERVER_URL;
@@ -63,7 +66,17 @@ export function parseArguments(
     }
   }
 
-  return { help, serviceId, apiKey, serverUrl, unlockWebhookUrl, waitTimeoutInMs, lockExpirationInSeconds, params };
+  return {
+    help,
+    version,
+    serviceId,
+    apiKey,
+    serverUrl,
+    unlockWebhookUrl,
+    waitTimeoutInMs,
+    lockExpirationInSeconds,
+    params,
+  };
 }
 
 function printHelp(): void {
@@ -74,6 +87,7 @@ function printHelp(): void {
   console.log('  check  [LOCK_NAME]              Check a lock');
   console.log('\nOptional flags:');
   console.log('  -h, --help                      Display this help and exit');
+  console.log('  -v, --version                   Display the package/CLI version');
   console.log(
     '  -i, --service-id                Your service identifier (required, alternatively set by ENV var `LOCKDB_SERVICE_ID`)',
   );
@@ -95,12 +109,31 @@ function printHelp(): void {
 }
 
 async function main(args: string[]): Promise<void> {
-  const { help, serviceId, apiKey, serverUrl, unlockWebhookUrl, waitTimeoutInMs, lockExpirationInSeconds, params } =
-    parseArguments(args);
+  const {
+    help,
+    version,
+    serviceId,
+    apiKey,
+    serverUrl,
+    unlockWebhookUrl,
+    waitTimeoutInMs,
+    lockExpirationInSeconds,
+    params,
+  } = parseArguments(args);
 
   // If help flag enabled, print help.
   if (help) {
     printHelp();
+    Deno.exit(0);
+  }
+
+  // If version flag enabled, print version.
+  if (version) {
+    console.log(`v${VERSION}`);
+    // console.log(`LockDB: v${VERSION}`);
+    // console.log(`Deno: v${Deno.version.deno}`);
+    // console.log(`V8: v${Deno.version.v8}`);
+    // console.log(`TypeScript: v${Deno.version.typescript}`);
     Deno.exit(0);
   }
 

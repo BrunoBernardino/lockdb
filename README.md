@@ -56,7 +56,7 @@ Here's an example for Linux intel (x86_64), on downloading it with `curl` and mo
 
 ```sh
 # Download the binary from the latest release for your system and move it to `/usr/local/bin/`. Here's an example for most Linux OSes:
-$ curl -L https://github.com/BrunoBernardino/lockdb/releases/latest/download/lockdb-linux-intel --output lockdb && chmod +x lockdb && sudo mv lockdb /usr/local/bin/
+curl -L https://github.com/BrunoBernardino/lockdb/releases/latest/download/lockdb-linux-intel --output lockdb && chmod +x lockdb && sudo mv lockdb /usr/local/bin/
 ```
 
 Then to use it, on any OS:
@@ -84,14 +84,16 @@ lockdb unlock sales
 Requires [`deno@1.36.0`](https://deno.land) (other versions will probably work).
 
 ```bash
-$ make format
-$ make test
+make format
+make test
 
 # CLI
-$ deno run --allow-net mock_server.ts
-$ deno run --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts check sales --server-url="http://127.0.0.1:5678" --service-id="reports" --api-key="api-key"
+deno run --allow-net mock_server.ts
+deno run --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL main.ts check sales --server-url="http://127.0.0.1:5678" --service-id="reports" --api-key="api-key"
 ```
 
 ## Publishing
 
-After committing and pushing, just run `make publish VERSION=x.y.z`. That will also trigger a new tag, build binaries, and a new draft release with them.
+1. Commit (and push) changes.
+2. Update `VERSION` in `main.ts`.
+3. Run `make publish VERSION=x.y.z`. That will publish to `npm` and push a new tag, which will build binaries, and a new pre-release with them.

@@ -10,6 +10,7 @@ Deno.test('parseArguments should correctly parse CLI arguments', () => {
       expected: {
         apiKey: undefined,
         help: true,
+        version: false,
         lockExpirationInSeconds: undefined,
         params: [],
         serverUrl: undefined,
@@ -27,6 +28,7 @@ Deno.test('parseArguments should correctly parse CLI arguments', () => {
       expected: {
         apiKey: 'key',
         help: false,
+        version: false,
         lockExpirationInSeconds: undefined,
         params: [],
         serverUrl: 'url',
@@ -44,6 +46,7 @@ Deno.test('parseArguments should correctly parse CLI arguments', () => {
       expected: {
         apiKey: undefined,
         help: false,
+        version: false,
         lockExpirationInSeconds: undefined,
         params: [],
         serverUrl: undefined,
