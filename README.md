@@ -37,13 +37,15 @@ console.log(isReportLocked); // Outputs `false`
 // Obtain a lock, waiting up to 30 seconds for it
 try {
   await locker.lock(lockName);
+
+  // Generate important/intensive report here
+
+  // Unlock a lock, returning if it was locked before
+  const wasReportLockedBeforeUnlock = await locker.unlock(lockName);
+  console.log(wasReportLockedBeforeUnlock); // Outputs `true`
 } catch (error) {
   console.error(`Failed to obtain lock (${lockName}): ${error}`);
 }
-
-// Unlock a lock, returning if it was locked before
-const wasReportLockedBeforeUnlock = await locker.unlock(lockName);
-console.log(wasReportLockedBeforeUnlock); // Outputs `true`
 ```
 
 ### CLI
