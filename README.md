@@ -4,7 +4,7 @@
 
 LockDB is a cross-platform tool you can use to handle process/event [locking](https://en.wikipedia.org/wiki/Lock_(computer_science)) and avoid race conditions. It is sometimes also known as a [semaphore](https://en.wikipedia.org/wiki/Semaphore_(programming)).
 
-There are packages for [Node.js/Browser/Bun/NPM](https://npmjs.org/package/lockdb), [Deno](https://deno.land/x/lockdb), and you can also use it as a [CLI](#cli).
+There are packages for [Node.js/Browser/Bun/NPM](https://npmjs.org/package/lockdb), [Deno](https://deno.land/x/lockdb), and you can also use it as a [CLI](https://lockdb.com/docs/cli#install).
 
 It has no dependencies, and is very simple to use, with effectively 3 commands/actions/methods: `lock('name')`, `unlock('name')`, and `check('name')`.
 
