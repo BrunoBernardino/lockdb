@@ -96,38 +96,83 @@ export default class LockDB {
   }
 
   public async lock(
-    name: string,
+    nameOrNames: string | string[],
     { unlockWebhookUrl, waitTimeoutInMs = 30_000, lockExpirationInSeconds = 300 }: LockActionOptions = {},
   ): Promise<boolean> {
-    const data: ClientLockEventData = {
-      eventName: 'lock',
-      lockName: name,
-      waitForLockInMs: waitTimeoutInMs,
-      unlockWebhookUrl,
-      lockExpirationInSeconds,
-    };
+    const lockNames: string[] = [];
 
-    await this.callServer<ServerLockEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+    if (!Array.isArray(nameOrNames)) {
+      lockNames.push(nameOrNames);
+    } else {
+      nameOrNames.forEach((name) => lockNames.push(name));
+    }
+
+    for (const name of lockNames) {
+      const data: ClientLockEventData = {
+        eventName: 'lock',
+        lockName: name,
+        waitForLockInMs: waitTimeoutInMs,
+        unlockWebhookUrl,
+        lockExpirationInSeconds,
+      };
+
+      await this.callServer<ServerLockEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+    }
 
     return true;
   }
 
   public async unlock(
-    name: string,
+    nameOrNames: string | string[],
     { waitTimeoutInMs = 5_000 }: UnlockActionOptions = {},
   ): Promise<boolean> {
-    const data: ClientUnlockEventData = { eventName: 'unlock', lockName: name };
+    const lockNames: string[] = [];
 
-    const result = await this.callServer<ServerUnlockEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+    if (!Array.isArray(nameOrNames)) {
+      lockNames.push(nameOrNames);
+    } else {
+      nameOrNames.forEach((name) => lockNames.push(name));
+    }
 
-    return Boolean(result.wasLocked);
+    let wasAnyLocked = false;
+
+    for (const name of lockNames) {
+      const data: ClientUnlockEventData = { eventName: 'unlock', lockName: name };
+
+      const result = await this.callServer<ServerUnlockEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+
+      if (result.wasLocked) {
+        wasAnyLocked = true;
+      }
+    }
+
+    return wasAnyLocked;
   }
 
-  public async check(name: string, { waitTimeoutInMs = 5_000 }: CheckActionOptions = {}): Promise<boolean> {
-    const data: ClientCheckEventData = { eventName: 'check', lockName: name };
+  public async check(
+    nameOrNames: string | string[],
+    { waitTimeoutInMs = 5_000 }: CheckActionOptions = {},
+  ): Promise<boolean> {
+    const lockNames: string[] = [];
 
-    const result = await this.callServer<ServerCheckEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+    if (!Array.isArray(nameOrNames)) {
+      lockNames.push(nameOrNames);
+    } else {
+      nameOrNames.forEach((name) => lockNames.push(name));
+    }
 
-    return Boolean(result.isLocked);
+    let isAnyLocked = false;
+
+    for (const name of lockNames) {
+      const data: ClientCheckEventData = { eventName: 'check', lockName: name };
+
+      const result = await this.callServer<ServerCheckEventData>(data, { callTimeoutInMs: waitTimeoutInMs });
+
+      if (result.isLocked) {
+        isAnyLocked = true;
+      }
+    }
+
+    return isAnyLocked;
   }
 }

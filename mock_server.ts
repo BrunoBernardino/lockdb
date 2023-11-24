@@ -1,5 +1,5 @@
 /**
- * This mock server exists to help with tests
+ * This mock server exists to help with tests and serve as a potential foundation for a self-hosted server
  */
 
 import { ClientSentEventData, ServerSentEventData } from './mod.ts';
