@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.36.0
+          deno-version: v1.37.0
       - run: |
           make test
 
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.36.0
+          deno-version: v1.37.0
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.version }}
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.36.0
+          deno-version: v1.37.0
       - env:
           LOCKDB_SERVICE_ID: 'reports'
           LOCKDB_API_KEY: 'api-key'

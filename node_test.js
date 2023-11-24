@@ -28,7 +28,7 @@ const locker = new LockDB('reports', {
   // Check lock
   let isReportLocked = await locker.check(lockName);
   if (isReportLocked !== true) {
-    console.error('Lock failed');
+    console.error('Check failed');
     process.exit(1);
   }
 
@@ -46,23 +46,44 @@ const locker = new LockDB('reports', {
   }
 
   // Unlock
-  wasReportLocked = await locker.unlock(lockName);
+  const wasReportLocked = await locker.unlock(lockName);
   if (wasReportLocked !== true) {
-    console.error('Lock failed');
+    console.error('Unlock failed');
     process.exit(1);
   }
 
   // Check lock
   isReportLocked = await locker.check(lockName);
   if (isReportLocked !== false) {
-    console.error('Lock failed');
+    console.error('Check failed');
     process.exit(1);
   }
 
   // Check the other lock
   const isBackupLocked = await locker.check(secondLockName);
   if (isBackupLocked !== true) {
-    console.error('Lock failed');
+    console.error('Check failed');
+    process.exit(1);
+  }
+
+  // Unlock both locks
+  const wereReportsLocked = await locker.unlock([lockName, secondLockName]);
+  if (wereReportsLocked !== true) {
+    console.error('Unlock failed');
+    process.exit(1);
+  }
+
+  // Obtain both locks
+  try {
+    await locker.lock([lockName, secondLockName]);
+  } catch (error) {
+    console.error(`Failed to obtain locks (${lockName}, ${secondLockName}): ${error}`);
+  }
+
+  // Check both locks
+  const areReportsLocked = await locker.check([lockName, secondLockName]);
+  if (areReportsLocked !== true) {
+    console.error('Check failed');
     process.exit(1);
   }
 

@@ -64,6 +64,22 @@ Deno.test({
     const isBackupLocked = await locker.check(secondLockName);
     assertEquals(isBackupLocked, true);
 
+    // Unlock both locks
+    const wereReportsLocked = await locker.unlock([lockName, secondLockName]);
+    assertEquals(wereReportsLocked, true);
+
+    // Obtain both locks
+    try {
+      await locker.lock([lockName, secondLockName], { waitTimeoutInMs: 10 });
+    } catch (error) {
+      console.error(`Failed to obtain locks (${lockName}, ${secondLockName}): ${error}`);
+      assertEquals(true, false);
+    }
+
+    // Check both locks
+    const areReportsLocked = await locker.check([lockName, secondLockName]);
+    assertEquals(areReportsLocked, true);
+
     abortController.abort('Test finished');
   },
   sanitizeResources: false,

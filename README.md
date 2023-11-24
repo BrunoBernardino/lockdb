@@ -6,7 +6,7 @@ LockDB is a cross-platform tool you can use to handle process/event [locking](ht
 
 There are packages for [Node.js/Browser/Bun/NPM](https://npmjs.org/package/lockdb), [Deno](https://deno.land/x/lockdb), and you can also use it as a [CLI](https://lockdb.com/docs/cli#install).
 
-It has no dependencies, and is very simple to use, with effectively 3 commands/actions/methods: `lock('name')`, `unlock('name')`, and `check('name')`.
+It has no dependencies, and is very simple to use, with effectively 3 commands/actions/methods: `lock('name')`, `unlock('name')`, and `check('name')`. It also supports locking/unlocking/checking multiple locks at once.
 
 You can get your `apiKey` at [lockdb.com](https://lockdb.com) or connect `LockDB` to your own server/API.
 
@@ -24,7 +24,7 @@ pnpm add --save-exact lockdb
 
 ```js
 // import LockDB from 'lockdb';
-// import LockDB from 'https://deno.land/x/lockdb@0.1.0/mod.ts';
+// import LockDB from 'https://deno.land/x/lockdb@0.2.0/mod.ts';
 const LockDB = require('lockdb');
 
 const lockName = 'sales';
@@ -77,11 +77,15 @@ lockdb lock sales
 # Unlock a lock, returning if it was locked before 
 lockdb unlock sales
 # Outputs `true`
+
+# Check on multiple locks
+lockdb check sales,report,cleanup
+# Outputs `false`
 ```
 
 ## Development
 
-Requires [`deno@1.36.0`](https://deno.land) (other versions will probably work).
+Requires [`deno@1.37.0`](https://deno.land) (other versions will probably work).
 
 ```bash
 make format

@@ -1,7 +1,7 @@
 import { parse } from 'std/flags/mod.ts';
 import LockDB from './mod.ts';
 
-const VERSION = '0.1.1';
+const VERSION = '0.2.0';
 const LOCKDB_SERVICE_ID = Deno.env.get('LOCKDB_SERVICE_ID');
 const LOCKDB_API_KEY = Deno.env.get('LOCKDB_API_KEY');
 const LOCKDB_SERVER_URL = Deno.env.get('LOCKDB_SERVER_URL');
@@ -82,9 +82,15 @@ export function parseArguments(
 function printHelp(): void {
   console.log(`Usage: lockdb [COMMAND] [OPTIONS...]`);
   console.log('\nCommands:');
-  console.log('  lock   [LOCK_NAME]              Obtain a lock');
-  console.log('  unlock [LOCK_NAME]              Delete a lock');
-  console.log('  check  [LOCK_NAME]              Check a lock');
+  console.log(
+    '  lock   [LOCK_NAME]              Obtain a lock (for multiple locks, make the name a comma-separated list)',
+  );
+  console.log(
+    '  unlock [LOCK_NAME]              Delete a lock (for multiple locks, make the name a comma-separated list)',
+  );
+  console.log(
+    '  check  [LOCK_NAME]              Check a lock (for multiple locks, make the name a comma-separated list)',
+  );
   console.log('\nOptional flags:');
   console.log('  -h, --help                      Display this help and exit');
   console.log('  -v, --version                   Display the package/CLI version');
@@ -159,9 +165,18 @@ async function main(args: string[]): Promise<void> {
     Deno.exit(1);
   }
 
-  const lockName = (params[1] as string).trim();
+  let lockNameOrNames: string | string[] = (params[1] as string).trim();
 
-  if (!lockName) {
+  if (!lockNameOrNames) {
+    console.log('Invalid lock name. Exiting.');
+    Deno.exit(1);
+  }
+
+  if (lockNameOrNames.includes(',')) {
+    lockNameOrNames = lockNameOrNames.split(',').map((name) => name.trim()).filter(Boolean);
+  }
+
+  if (Array.isArray(lockNameOrNames) && lockNameOrNames.length === 0) {
     console.log('Invalid lock name. Exiting.');
     Deno.exit(1);
   }
@@ -169,19 +184,19 @@ async function main(args: string[]): Promise<void> {
   const locker = new LockDB(serviceId, { apiKey, serverUrl });
 
   if (command === 'lock') {
-    const gotTheLock = await locker.lock(lockName, {
+    const gotTheLock = await locker.lock(lockNameOrNames, {
       unlockWebhookUrl,
       waitTimeoutInMs,
       lockExpirationInSeconds,
     });
     console.log(gotTheLock);
   } else if (command === 'unlock') {
-    const wasLocked = await locker.unlock(lockName, {
+    const wasLocked = await locker.unlock(lockNameOrNames, {
       waitTimeoutInMs,
     });
     console.log(wasLocked);
   } else if (command === 'check') {
-    const isLocked = await locker.check(lockName, {
+    const isLocked = await locker.check(lockNameOrNames, {
       waitTimeoutInMs,
     });
     console.log(isLocked);
