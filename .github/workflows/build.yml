@@ -19,10 +19,10 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Compile
         run: |
-          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-unknown-linux-gnu main.ts --output lockdb-linux-intel
-          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-pc-windows-msvc main.ts --output lockdb-windows-intel
-          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-apple-darwin main.ts --output lockdb-apple-intel
-          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=aarch64-apple-darwin main.ts --output lockdb-apple-silicon
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-unknown-linux-gnu --output lockdb-linux-intel main.ts
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-pc-windows-msvc --output lockdb-windows-intel main.ts
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=x86_64-apple-darwin --output lockdb-apple-intel main.ts
+          deno compile --allow-net --allow-env=LOCKDB_SERVICE_ID,LOCKDB_API_KEY,LOCKDB_SERVER_URL --target=aarch64-apple-darwin --output lockdb-apple-silicon main.ts
       - name: Upload linux-intel binary to release
         uses: svenstaro/upload-release-action@v2
         with:
