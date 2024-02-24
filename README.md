@@ -24,7 +24,7 @@ pnpm add --save-exact lockdb
 
 ```js
 // import LockDB from 'lockdb';
-// import LockDB from 'https://deno.land/x/lockdb@0.2.1/mod.ts';
+// import LockDB from 'https://deno.land/x/lockdb@0.2.2/mod.ts';
 const LockDB = require('lockdb');
 
 const lockName = 'sales';
@@ -85,7 +85,7 @@ lockdb check sales,report,cleanup
 
 ## Development
 
-Requires [`deno@1.39.3`](https://deno.land) (other versions will probably work).
+Requires [`deno@1.41.0`](https://deno.land) (other versions will probably work).
 
 ```bash
 make format

@@ -1,7 +1,7 @@
 import { parse } from 'std/flags/mod.ts';
 import LockDB from './mod.ts';
 
-const VERSION = '0.2.1';
+const VERSION = '0.2.2';
 const LOCKDB_SERVICE_ID = Deno.env.get('LOCKDB_SERVICE_ID');
 const LOCKDB_API_KEY = Deno.env.get('LOCKDB_API_KEY');
 const LOCKDB_SERVER_URL = Deno.env.get('LOCKDB_SERVER_URL');
